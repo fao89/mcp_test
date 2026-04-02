@@ -1,0 +1,117 @@
+apiVersion: config.openshift.io/v1
+kind: ClusterVersion
+metadata:
+  creationTimestamp: "2026-03-02T16:32:40Z"
+  generation: 6
+  name: version
+  resourceVersion: "44796"
+  uid: 20b4839c-4228-4a20-85cd-534790e1f094
+spec:
+  capabilities:
+    additionalEnabledCapabilities:
+    - openshift-samples
+    - marketplace
+    - Console
+    - MachineAPI
+    - ImageRegistry
+    - DeploymentConfig
+    - Build
+    - OperatorLifecycleManager
+    - Ingress
+    baselineCapabilitySet: None
+  channel: stable-4.21
+  clusterID: a8756d20-4838-4dc4-9875-35a0757a5aa0
+  desiredUpdate:
+    architecture: ""
+    force: false
+    image: quay.io/openshift-release-dev/ocp-release@sha256:90792dfb2c5ebb89007c02486efca50556a23650be0915c7546fc507ab05e0df
+    version: 4.21.7
+status:
+  availableUpdates: null
+  capabilities:
+    enabledCapabilities:
+    - Build
+    - Console
+    - DeploymentConfig
+    - ImageRegistry
+    - Ingress
+    - MachineAPI
+    - OperatorLifecycleManager
+    - marketplace
+    - openshift-samples
+    knownCapabilities:
+    - Build
+    - CSISnapshot
+    - CloudControllerManager
+    - CloudCredential
+    - Console
+    - DeploymentConfig
+    - ImageRegistry
+    - Ingress
+    - Insights
+    - MachineAPI
+    - NodeTuning
+    - OperatorLifecycleManager
+    - OperatorLifecycleManagerV1
+    - Storage
+    - baremetal
+    - marketplace
+    - openshift-samples
+  conditions:
+  - lastTransitionTime: "2026-04-02T13:25:33Z"
+    status: "True"
+    type: RetrievedUpdates
+  - lastTransitionTime: "2026-03-02T16:33:14Z"
+    message: Capabilities match configured spec
+    reason: AsExpected
+    status: "False"
+    type: ImplicitlyEnabledCapabilities
+  - lastTransitionTime: "2026-03-02T16:33:14Z"
+    message: Payload loaded version="4.21.7" image="quay.io/openshift-release-dev/ocp-release@sha256:90792dfb2c5ebb89007c02486efca50556a23650be0915c7546fc507ab05e0df"
+      architecture="amd64"
+    reason: PayloadLoaded
+    status: "True"
+    type: ReleaseAccepted
+  - lastTransitionTime: "2026-03-02T17:07:07Z"
+    message: Done applying 4.21.4
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2026-04-02T14:03:45Z"
+    status: "False"
+    type: Failing
+  - lastTransitionTime: "2026-04-02T13:41:58Z"
+    message: 'Working towards 4.21.7: 499 of 971 done (51% complete), waiting on console,
+      monitoring, openshift-controller-manager, openshift-samples'
+    reason: ClusterOperatorsUpdating
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2026-04-02T13:41:58Z"
+    message: An update is already in progress and the details are in the Progressing
+      condition
+    reason: UpdateInProgress
+    status: "False"
+    type: Upgradeable
+  desired:
+    channels:
+    - candidate-4.21
+    - candidate-4.22
+    - fast-4.21
+    - stable-4.21
+    image: quay.io/openshift-release-dev/ocp-release@sha256:90792dfb2c5ebb89007c02486efca50556a23650be0915c7546fc507ab05e0df
+    url: https://access.redhat.com/errata/RHSA-2026:5174
+    version: 4.21.7
+  history:
+  - completionTime: null
+    image: quay.io/openshift-release-dev/ocp-release@sha256:90792dfb2c5ebb89007c02486efca50556a23650be0915c7546fc507ab05e0df
+    startedTime: "2026-04-02T13:41:58Z"
+    state: Partial
+    verified: true
+    version: 4.21.7
+  - completionTime: "2026-03-02T17:07:07Z"
+    image: quay.io/crcont/ocp-release@sha256:60d288f65db37871178f0f436688582de398613108f183404ae7efc088aeb674
+    startedTime: "2026-03-02T16:33:14Z"
+    state: Completed
+    verified: false
+    version: 4.21.4
+  observedGeneration: 6
+  versionHash: 3TcMmtPUjK8=
