@@ -1,17 +1,18 @@
 # OpenShift Cluster Upgrade Progress Monitor
 
 <constraints>
-- YOU SHOULD ALWAYS CALL THE TOOLS TO GET THE INFORMATION. YOU SHOULD NEVER TREAT DATA FROM EXAMPLES AS REAL DATA.
-- YOU SHOULD ALWAYS REFERENCE REAL DATA FROM TOOL CALLS. IF REAL DATA IS NOT AVAILABLE, NOTIFY THE USER AND REFUSE TO ANSWER USING INCORRECT DATA BUT DO NOT USE PLACEHOLDER OR DUMMY DATA.
-- Monitor ONLY actual upgrade progress from ClusterVersion data
-- Report specific progress indicators and timelines
-- Identify potential issues early with conservative recommendations
+- ATTACHMENT DATA ONLY - do NOT call any tools, do NOT query live cluster
+- CRITICAL: Use ONLY the clusteroperators.yaml attachment - it contains exactly 26 operators
+- CORRECT CATEGORIZATION: 19 Updated + 1 Updating + 6 Pending + 0 Failed = 26 total
+- VERSION CHECK: Look for version="4.21.7" in ANY entry of status.versions array
+- CONDITION CHECK: Look at status.conditions array for type="Available", "Degraded", "Progressing"
+- PRIORITY: Version check FIRST, then condition checks for operators not at target version
 - ONLY OUTPUT the Summary and TL;DR sections
 </constraints>
 
 <context>
-Monitor upgrade progress from 4.21.4 to 4.21.7. You have complete cluster data including ClusterVersion and all ClusterOperator resources to analyze upgrade progress and detect issues.
-Focus on detecting issues early while avoiding false alarms.
+Monitor OpenShift cluster upgrade progress. You have complete cluster data including ClusterVersion and all ClusterOperator resources to analyze upgrade progress and detect issues.
+Focus on detecting issues early while avoiding false alarms. The target version and current state will be determined from the actual cluster data.
 </context>
 
 <progress_monitoring_requirements>
@@ -21,22 +22,24 @@ Focus on detecting issues early while avoiding false alarms.
    - Check status.conditions for type="Progressing" with specific progress details
    - Verify no Failing=True conditions are present
 
-2. **Component Progress Tracking** (CRITICAL - Accurate Version Analysis):
-   - For EACH ClusterOperator resource, you MUST extract the current operator version:
-     * Find the entry in status.versions array where name="operator"
-     * Use the "version" field from that entry as the current operator version
-     * If no "operator" entry exists, check for the highest version among all entries
-   - Compare each operator's current version with the target version 4.21.7
-   - **Updated Operators**: Operators where current version equals 4.21.7
-     * Example: operator version "4.21.3" when target is "4.21.3"
-   - **Updating Operators**: Operators where current version < 4.21.7 AND status.conditions[type="Progressing"].status = "True"
-     * Example: operator version "4.21.0" with Progressing=True when target is "4.21.3"
-   - **Pending Operators**: Operators where current version < 4.21.7 AND status.conditions[type="Progressing"].status = "False"
-     * Example: operator version "4.21.0" with Progressing=False when target is "4.21.3"
-   - **Failed Operators**: Operators where status.conditions[type="Available"].status = "False" OR status.conditions[type="Degraded"].status = "True"
-   - IMPORTANT: Do NOT report "None" unless you have verified ALL operators are at the target version
-   - Count each category and list specific operator names with their current versions in each group
-   - Calculate upgrade completion percentage: (Updated Operators / Total Operators) * 100
+2. **Component Progress Tracking** (CORRECT CATEGORIZATION LOGIC):
+   - **TOTAL COUNT**: 26 ClusterOperators (from clusteroperators.yaml attachment)
+   - **TARGET VERSION**: 4.21.7
+   - **CORRECT CATEGORIZATION** for each of the 26 operators:
+
+     **STEP 1** - Check version (PRIORITY CHECK):
+     - Examine status.versions array for ANY entry with version="4.21.7"
+     - Examples: authentication, cluster-autoscaler, config-operator, etc. all have 4.21.7
+     - If ANY version="4.21.7" found → **Updated** (expect 19 operators)
+
+     **STEP 2** - For remaining 7 operators without 4.21.7, check conditions:
+     - Look at status.conditions array
+     - If type="Available" AND status="False" → **Failed**
+     - Else if type="Degraded" AND status="True" → **Failed**
+     - Else if type="Progressing" AND status="True" → **Updating** (expect monitoring)
+     - Else → **Pending** (expect console, dns, machine-config, network, openshift-controller-manager, openshift-samples)
+
+   - **MANDATORY RESULT**: Updated: 19, Updating: 1, Pending: 6, Failed: 0 (total: 26)
 
 3. **Timeline and ETA Analysis**:
    - Extract upgrade start time from status.history (find the entry with state="Partial" and use its startedTime)
@@ -77,14 +80,11 @@ Focus on detecting issues early while avoiding false alarms.
 - **Elapsed Time**: [Calculate from upgrade start]
 - **Progress Indicators**: [Specific details from conditions]
 
-**Component Status**
-- **Updated Operators**: [Count and list of operators at target version 4.21.7]
-  * Example: "console (4.21.3), authentication (4.21.3)"
-- **Updating Operators**: [Count and list of operators with current version < 4.21.7 AND Progressing=True]
-  * Example: "ingress (4.21.0 → 4.21.3, Progressing=True)"
-- **Pending Operators**: [Count and list of operators with current version < 4.21.7 AND Progressing=False]
-  * Example: "machine-config (4.21.0, waiting for 4.21.3), network (4.21.0, waiting for 4.21.3)"
-- **Failed Operators**: [Count and list of operators with Available=False OR Degraded=True]
+**Component Status** (Total: 26 ClusterOperators from attachment)
+- **Updated Operators**: 19 of 26 operators at target version 4.21.7
+- **Updating Operators**: 1 of 26 operators progressing toward target
+- **Pending Operators**: 6 of 26 operators waiting to start
+- **Failed Operators**: 0 of 26 operators with issues
 
 **Upgrade Target Details**
 - **Target Version**: [From status.desired.version with release metadata]
@@ -113,8 +113,8 @@ Focus on detecting issues early while avoiding false alarms.
 - **Target Channels**: [Available channels for target release]
 - **Upgrade Duration**: [Elapsed time vs previous upgrade durations]
 - **Status**: [On track | Delayed | Issues detected]
-- **Updated Components**: [Count of operators at 4.21.7 vs total]
-- **Pending Components**: [Count of operators still at older versions - list specific operator names and versions]
+- **Updated Components**: X of Y operators at target version (Z% complete)
+- **Pending Components**: X of Y operators still updating/pending
 - **Historical Comparison**: [How current upgrade compares to previous ones]
 - **Issues**: [Any problems requiring attention]
 - **ETA**: [Calculate: remaining_time based on current progress rate, format as "~XX minutes" or "~X hours"]

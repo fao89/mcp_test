@@ -64,33 +64,35 @@ The repository provides a structured approach to test different OpenShift cluste
 Run the batch processing script to analyze all scenarios:
 
 ```bash
-./process_all_dirs.sh
+./process_all_dirs.sh           # Process all directories
+./process_all_dirs.sh --help   # Show usage information
 ```
 
 This will:
 1. Initialize connection to the MCP service
-2. Process each directory with its input prompt and cluster data
+2. Process each directory by calling `process_single_dir.sh`
 3. Generate analysis responses in `output.md` files
-4. Extract only the response content (not JSON metadata)
+4. Provide progress tracking and summary report
+5. Extract only the response content (not JSON metadata)
 
 ### Processing Individual Scenarios
 
 For single scenario analysis:
 
 ```bash
-# Example: Process precheck scenario
-./mcp-client.sh --quiet query "$(cat precheck/input.md)
+./process_single_dir.sh <directory_name>
 
-<attachments>
-<attachment name=\"clusterversion.yaml\" type=\"yaml\">
-$(cat precheck/clusterversion.yaml)
-</attachment>
-
-<attachment name=\"clusteroperators.yaml\" type=\"yaml\">
-$(cat precheck/clusteroperators.yaml)
-</attachment>
-</attachments>" | jq -r '.response' > precheck/output.md
+# Examples:
+./process_single_dir.sh progress      # Process progress scenario
+./process_single_dir.sh precheck      # Process precheck scenario
+./process_single_dir.sh troubleshoot  # Process troubleshoot scenario
 ```
+
+The single directory processor will:
+1. Validate required files exist (`input.md`, `clusterversion.yaml`, `clusteroperators.yaml`)
+2. Create the MCP query with attachments
+3. Send to MCP service and extract response content
+4. Save clean response to `output.md`
 
 ### Interactive Testing
 
